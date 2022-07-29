@@ -146,7 +146,7 @@ logging.getLogger("cabinetry").setLevel(logging.INFO)
 
 class Suite:
     timeout = 2400.00
-    params = ([10, 100, 500, 1000, -1])
+    params = ([10, 100, 500])
     def setup(self,n):
 
         N_FILES_MAX_PER_SAMPLE = n
@@ -415,20 +415,20 @@ class Suite:
         return run_data['walltime']
     TrackWalltime.param_names = ['walltime']
 
-#    def TrackThreadcount(self,n):
-#        with open('output.pickle', 'rb') as fd:
-#            run_data = pickle.load(fd)
-#        return run_data['ave_num_threads']
-#    TrackThreadcount.param_names = ['Average Number of Threads']
+    def TrackThreadcount(self,n):
+        with open('output.pickle', 'rb') as fd:
+            run_data = pickle.load(fd)
+        return run_data['ave_num_threads']
+    TrackThreadcount.param_names = ['Average Number of Threads']
 
-#    def TrackBytes(self, n):
-#        with open('output.pickle', 'rb') as fd:
-#            run_data = pickle.load(fd)
-#        return run_data['bytesread']/run_data['walltime']
-#    TrackBytes.param_names = ['Bytes per Second']
+    def TrackBytes(self, n):
+        with open('output.pickle', 'rb') as fd:
+            run_data = pickle.load(fd)
+        return run_data['bytesread']/run_data['walltime']
+    TrackBytes.param_names = ['Bytes per Second']
     
-#    def TrackBytesPerThread(self, n):
-#        with open('output.pickle', 'rb') as fd:
-#            run_data = pickle.load(fd)
-#        return (run_data['bytesread']/run_data['walltime'])/run_data['ave_num_threads']
-#    TrackBytesPerThread.param_names = ['Bytes per Thread']
+    def TrackBytesPerThread(self, n):
+        with open('output.pickle', 'rb') as fd:
+            run_data = pickle.load(fd)
+        return (run_data['bytesread']/run_data['walltime'])/run_data['ave_num_threads']
+    TrackBytesPerThread.param_names = ['Bytes per Thread']
