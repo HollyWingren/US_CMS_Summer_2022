@@ -6,11 +6,9 @@ import numpy as np
 from coffea import processor
 from coffea.nanoevents import schemas
 import pickle
+
 fileset = {'SingleMu' : ["root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root"]}
 class Suite:
-    timeout = 1200.00
-    params = ([2 ** 17, 2 ** 18, 2 ** 19])
-    
     def setup_cache(self):
         class Q1Processor(processor.ProcessorABC):
             def process(self, events):
@@ -24,19 +22,18 @@ class Suite:
         if os.environ.get("LABEXTENTION_FACTORY_MODULE") == "coffea_casa":
             from dask.distributed import Client
             client = Client("tls://localhost:8786")
-            self.executor = processor.DaskExecutor(client=client, status=False)
+            executor = processor.DaskExecutor(client=client, status=False)
             #executor = processor.FuturesExecutor(workers=ncores, status=False)
         else:
-            self.executor = processor.IterativeExecutor()
+            executor = processor.IterativeExecutor()
             #executor = processor.FuturesExecutor(workers=ncores, status=False)
-    def setup(self, n):
-        run = processor.Runner(executor=self.executor,
+        run = processor.Runner(executor=executor,
                             schema=schemas.NanoAODSchema,
                             savemetrics=True,
-                            chunksize=n,
+                            chunksize=2**19,
                             )
         tic = time.monotonic()
-        output, metrics = self.run(fileset, "Events", processor_instance=Q1Processor())
+        output, metrics = run(fileset, "Events", processor_instance=Q1Processor())
         workers = len(client.scheduler_info()['workers'])
         print('workers = ', workers, ' cores = ', 2*workers)
         toc = time.monotonic()
@@ -44,7 +41,7 @@ class Suite:
         ave_num_threads = metrics['processtime']/(toc-tic)
         metrics['walltime']=walltime
         metrics['ave_num_threads']=ave_num_threads
-        metrics['chunksize'] = n
+        metrics['chunksize'] = 2**19
         with open('output.pickle', 'wb') as fd:
             pickle.dump(metrics, fd, protocol=pickle.HIGHEST_PROTOCOL)
         return metrics

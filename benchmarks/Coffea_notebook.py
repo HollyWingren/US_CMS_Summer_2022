@@ -147,7 +147,7 @@ logging.getLogger("cabinetry").setLevel(logging.INFO)
 class Suite:
     timeout = 2400.00
     params = ([10, 100, 500])
-    def setup(self,n):
+    def setup(self, n):
 
         N_FILES_MAX_PER_SAMPLE = n
 
